@@ -1,4 +1,6 @@
 FROM tomcat:7-jre7
 MAINTAINER xyz
-RUN ["rm", "-fr", "/usr/local/tomcat/webapps/ROOT"]
-COPY /home/jenkins/workspace/pipeline_p-mszfz-7/target/ROOT.war /usr/local/tomcat/webapps/
+RUN ["rm", "-rf", "/usr/local/tomcat/webapps/ROOT"]
+ADD target/samplejava-1.0.0.BUILD-SNAPSHOT.war /usr/local/tomcat/webapps/
+
+CMD ["catalina.sh", "run"]
