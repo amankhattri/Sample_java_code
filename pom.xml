@@ -43,10 +43,9 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
+      
 	
-			<!-- Tomcat 7 Plugin -->
+			
 			<plugin>
 				<groupId>com.googlecode.t7mp</groupId>
 				<artifactId>maven-t7-plugin</artifactId>
