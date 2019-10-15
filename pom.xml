@@ -45,5 +45,148 @@
             </plugin>
         </plugins>
     </build>
+	
+			<!-- Tomcat 7 Plugin -->
+			<plugin>
+				<groupId>com.googlecode.t7mp</groupId>
+				<artifactId>maven-t7-plugin</artifactId>
+				<version>0.9.9.M1</version>
+				<configuration>
+					<contextPath>greenhouse</contextPath>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<id>publish</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<tasks>
+								<scp
+									file="${project.build.directory}/${project.build.finalName}.${project.packaging}"
+									todir="${publish.username}@${publish.host}:/tmp/greenhouse.war"
+									keyfile="${publish.keyfile}" trust="true" />
+								<sshexec host="${publish.host}" username="${publish.username}"
+									command="${publish.serverPath}/bin/tcruntime-ctl.sh stop"
+									keyfile="${publish.keyfile}" trust="true" failonerror="false" />
+								<sshexec host="${publish.host}" username="${publish.username}"
+									command="rm -rf ${publish.serverPath}/webapps/*" keyfile="${publish.keyfile}"
+									trust="true" />
+								<sshexec host="${publish.host}" username="${publish.username}"
+									command="mv /tmp/greenhouse.war ${publish.serverPath}/webapps/ROOT.war"
+									keyfile="${publish.keyfile}" trust="true" />
+								<sshexec host="${publish.host}" username="${publish.username}"
+									command="${publish.serverPath}/bin/tcruntime-ctl.sh start"
+									keyfile="${publish.keyfile}" trust="true" />
+							</tasks>
+						</configuration>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.ant</groupId>
+						<artifactId>ant-jsch</artifactId>
+						<version>1.8.1</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<useProjectReferences>false</useProjectReferences>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+					<wtpversion>2.0</wtpversion>
+				</configuration>
+			</plugin>
+		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings 
+					only. It has no influence on the Maven build itself. -->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.codehaus.mojo
+										</groupId>
+										<artifactId>
+											properties-maven-plugin
+										</artifactId>
+										<versionRange>
+											[1.0-alpha-2,)
+										</versionRange>
+										<goals>
+											<goal>
+												write-active-profile-properties
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<execute></execute>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<pluginRepositories>
+		<!-- For testing against latest Spring snapshots -->
+		<pluginRepository>
+			<id>spring-snapshot</id>
+			<name>SpringSource Snapshot Repository</name>
+			<url>http://repo.springsource.org/snapshot</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</pluginRepository>
+		<!-- For Spring releases -->
+		<pluginRepository>
+			<id>spring-repository</id>
+			<name>SpringSource Repository</name>
+			<url>http://repo.springsource.org/release</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+		<!-- For developing against latest Spring milestones -->
+		<pluginRepository>
+			<id>spring-milestone</id>
+			<name>SpringSource Milestone Repository</name>
+			<url>http://repo.springsource.org/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</pluginRepository>
+	</pluginRepositories>
+
+	<distributionManagement>
+		<!-- Temporary until we have a need to publish to a remote release repository -->
+		<snapshotRepository>
+			<id>localPublish</id>
+			<name>localPublish</name>
+			<url>file://${user.home}/local-maven-publish-repository</url>
+		</snapshotRepository>
+	</distributionManagement>	
 
 </project>
